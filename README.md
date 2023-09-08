@@ -1,4 +1,4 @@
-# GitHub Uploader
+# GitUp ⬆️
 A mostly *unnecessary* tool that utilizes the GitHub API to upload files to a repository directly without the need for local git commands.
 
 ## Features
@@ -15,7 +15,7 @@ A mostly *unnecessary* tool that utilizes the GitHub API to upload files to a re
    ```
 2. Download the python script
    ```bash
-   wget https://raw.githubusercontent.com/keceli/github_uploader/main/github_uploader.py
+   wget https://raw.githubusercontent.com/keceli/gitup/main/gitup.py
    ```
 3. Run the script and follow the prompts to fill in your username or organization name, repo name, and file path.
    ```bash
