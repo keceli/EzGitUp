@@ -38,18 +38,21 @@ ezgitup path/to/dir/*            # All files in a directory
 ezgitup *.py *.json *.md         # Multiple file types
 ezgitup test_*.py                # Files matching a pattern
 
-# Specify repository owner and name
-ezgitup --owner username --repo repository *.json
-# or using short options
-ezgitup -o username -r repository *.json
+# Specify repository
+ezgitup --repo username/repository *.json
+# or using short option
+ezgitup -r username/repository *.json
 
 # Upload files to a specific directory in the repository
 ezgitup --dir docs *.md          # Upload all markdown files to docs/
 ezgitup -d src/data *.json       # Upload JSON files to src/data/
+
+# Combine options
+ezgitup -r username/repository -d docs *.md
 ```
 
 The tool will use the following priority for repository information:
-1. Command-line arguments (`--owner`/`--repo`)
+1. Command-line argument (`--repo`/`-r`)
 2. Environment variable (`EZGITUP_DEPO`)
 3. Interactive prompt
 
@@ -68,7 +71,7 @@ ezgitup
 - Upload single or multiple files to GitHub repositories
 - Support for wildcard patterns (e.g., `*.json`, `test_*.py`)
 - Flexible repository specification:
-  - Command-line options (`--owner`/`--repo`)
+  - Command-line option (`--repo`/`-r`)
   - Simple owner/repo format
   - GitHub SSH URLs
   - GitHub HTTPS URLs
@@ -84,6 +87,6 @@ ezgitup
 
 ## License
 
-MIT License
+Apache-2.0 License
 
    

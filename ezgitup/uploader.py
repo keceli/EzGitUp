@@ -101,9 +101,8 @@ def main():
         "files", nargs="*", help="Files to upload (supports wildcards like *.json)"
     )
     parser.add_argument(
-        "--owner", "-o", help="GitHub repository owner (username or organization)"
+        "--repo", "-r", help='GitHub repository in format "owner/repo" or GitHub URL'
     )
-    parser.add_argument("--repo", "-r", help="GitHub repository name")
     parser.add_argument(
         "--dir",
         "-d",
@@ -116,8 +115,35 @@ def main():
     token = get_github_token()
 
     # Get repository information
-    owner = args.owner
-    repo = args.repo
+    owner = None
+    repo = None
+
+    # If repo provided via CLI, parse it
+    if args.repo:
+        repo_info = args.repo.strip()
+
+        # Handle GitHub URLs
+        if repo_info.startswith("git@github.com:"):
+            # Remove 'git@github.com:' and '.git' if present
+            repo_info = repo_info.replace("git@github.com:", "").replace(".git", "")
+        elif repo_info.startswith("https://github.com/"):
+            # Remove 'https://github.com/' and '.git' if present
+            repo_info = repo_info.replace("https://github.com/", "").replace(".git", "")
+
+        # Parse owner/repo
+        parts = repo_info.split("/")
+        if len(parts) == 2:
+            owner, repo = parts[0].strip(), parts[1].strip()
+        elif len(parts) == 1:
+            # If only one part is provided, assume it's the repo name
+            # and use the current user as the owner
+            owner = os.environ.get("USER", "")
+            repo = parts[0].strip()
+        else:
+            # If more than 2 parts, take the last part as repo
+            # and everything before the last slash as owner
+            owner = "/".join(parts[:-1]).strip()
+            repo = parts[-1].strip()
 
     # If owner or repo not provided via CLI, try environment variable or prompt
     if not (owner and repo):
