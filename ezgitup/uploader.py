@@ -9,11 +9,15 @@ import sys
 import json
 from typing import List, Optional, Tuple
 from pathlib import Path
-import importlib.metadata
 
 try:
-    __version__ = importlib.metadata.version("ezgitup")
-except importlib.metadata.PackageNotFoundError:
+    from importlib import metadata as importlib_metadata
+except ImportError:
+    import importlib_metadata
+
+try:
+    __version__ = importlib_metadata.version("ezgitup")
+except importlib_metadata.PackageNotFoundError:
     from . import __version__
 
 
