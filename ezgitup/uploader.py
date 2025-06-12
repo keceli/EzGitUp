@@ -109,7 +109,8 @@ def upload_file(
             print(f"Successfully added {repo_path} to the repository!")
             return True
         else:
-            print(f"Error uploading {file_path}: {response.json().get('message')}")
+            error_message = response.json().get("message", "Unknown error")
+            print(f"Error uploading {file_path}: {error_message}")
             return False
     except Exception as e:
         print(f"Error processing {file_path}: {str(e)}")
@@ -223,10 +224,11 @@ def main():
 
     # Upload files
     success_count = 0
+    total_files = len(files_to_upload)
     for file_path in files_to_upload:
         if upload_file(owner, repo, file_path, token, args.dir, args.uuid):
             success_count += 1
 
     print(
-        f"\nUpload complete: {success_count}/{len(files_to_upload)} files uploaded successfully."
+        f"\nUpload complete: {success_count}/{total_files} files uploaded successfully."
     )
