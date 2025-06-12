@@ -42,6 +42,10 @@ ezgitup test_*.py                # Files matching a pattern
 ezgitup --owner username --repo repository *.json
 # or using short options
 ezgitup -o username -r repository *.json
+
+# Upload files to a specific directory in the repository
+ezgitup --dir docs *.md          # Upload all markdown files to docs/
+ezgitup -d src/data *.json       # Upload JSON files to src/data/
 ```
 
 The tool will use the following priority for repository information:
@@ -68,6 +72,7 @@ ezgitup
   - Simple owner/repo format
   - GitHub SSH URLs
   - GitHub HTTPS URLs
+- Target directory support (`--dir`/`-d`)
 - Environment variable configuration
 - Interactive mode for user input
 - Progress tracking for multiple file uploads

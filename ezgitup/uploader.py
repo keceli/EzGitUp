@@ -51,28 +51,29 @@ def get_repo_info() -> tuple[str, str]:
     return owner, repo
 
 
-def upload_file(owner: str, repo: str, file_path: str, token: str) -> bool:
+def upload_file(
+    owner: str, repo: str, file_path: str, token: str, target_dir: str = ""
+) -> bool:
     """Upload a single file to GitHub repository."""
     try:
         with open(file_path, "rb") as file:
             content = base64.b64encode(file.read()).decode("utf-8")
 
-        url = f"https://api.github.com/repos/{owner}/{repo}/contents/{os.path.basename(file_path)}"
+        # Construct the path in the repository
+        filename = os.path.basename(file_path)
+        repo_path = os.path.join(target_dir, filename).replace("\\", "/").lstrip("/")
+
+        url = f"https://api.github.com/repos/{owner}/{repo}/contents/{repo_path}"
         headers = {
             "Authorization": f"token {token}",
             "Accept": "application/vnd.github.v3+json",
         }
-        data = {
-            "message": f"Adding file: {os.path.basename(file_path)}",
-            "content": content,
-        }
+        data = {"message": f"Adding file: {repo_path}", "content": content}
 
         response = requests.put(url, headers=headers, json=data)
 
         if response.status_code == 201:
-            print(
-                f"Successfully added {os.path.basename(file_path)} to the repository!"
-            )
+            print(f"Successfully added {repo_path} to the repository!")
             return True
         else:
             print(f"Error uploading {file_path}: {response.json().get('message')}")
@@ -103,6 +104,12 @@ def main():
         "--owner", "-o", help="GitHub repository owner (username or organization)"
     )
     parser.add_argument("--repo", "-r", help="GitHub repository name")
+    parser.add_argument(
+        "--dir",
+        "-d",
+        default="",
+        help='Target directory in the repository (e.g., "docs" or "src/data")',
+    )
     args = parser.parse_args()
 
     # Get GitHub token
@@ -144,7 +151,7 @@ def main():
     # Upload files
     success_count = 0
     for file_path in files_to_upload:
-        if upload_file(owner, repo, file_path, token):
+        if upload_file(owner, repo, file_path, token, args.dir):
             success_count += 1
 
     print(
