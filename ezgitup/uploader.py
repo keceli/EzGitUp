@@ -9,7 +9,12 @@ import sys
 import json
 from typing import List, Optional, Tuple
 from pathlib import Path
-from . import __version__
+import importlib.metadata
+
+try:
+    __version__ = importlib.metadata.version("ezgitup")
+except importlib.metadata.PackageNotFoundError:
+    from . import __version__
 
 
 def get_github_token() -> str:
