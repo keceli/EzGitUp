@@ -14,7 +14,12 @@ pip install ezgitup
 
 You can set the following environment variables:
 - `GITHUB_TOKEN`: Your GitHub personal access token (required)
-- `EZGITUP_DEPO`: Repository in format "owner/repo" (optional)
+- `EZGITUP_DEPO`: Repository in format "owner/repo" or GitHub URL (optional)
+
+The `EZGITUP_DEPO` environment variable supports multiple formats:
+- Simple format: `owner/repo`
+- SSH URL: `git@github.com:owner/repo.git`
+- HTTPS URL: `https://github.com/owner/repo.git`
 
 ### Command Line Usage
 
@@ -26,9 +31,15 @@ ezgitup path/to/file.txt
 
 # Upload multiple files
 ezgitup path/to/file1.txt path/to/file2.txt
+
+# Upload files using wildcards
+ezgitup *.json                    # All JSON files in current directory
+ezgitup path/to/dir/*            # All files in a directory
+ezgitup *.py *.json *.md         # Multiple file types
+ezgitup test_*.py                # Files matching a pattern
 ```
 
-If no files are specified, the tool will prompt you to enter file paths interactively.
+If no files are specified, the tool will prompt you to enter file paths interactively. Wildcards are also supported in interactive mode.
 
 ### Interactive Mode
 
@@ -41,9 +52,13 @@ ezgitup
 ## Features
 
 - Upload single or multiple files to GitHub repositories
-- Support for environment variables
+- Support for wildcard patterns (e.g., `*.json`, `test_*.py`)
+- Flexible repository specification:
+  - Simple owner/repo format
+  - GitHub SSH URLs
+  - GitHub HTTPS URLs
+- Environment variable configuration
 - Interactive mode for user input
-- Simple command-line interface
 - Progress tracking for multiple file uploads
 
 ## Requirements

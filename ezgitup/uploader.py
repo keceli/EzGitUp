@@ -3,49 +3,76 @@ import os
 import base64
 import requests
 import argparse
+import glob
 from typing import List, Optional
+
 
 def get_github_token() -> str:
     """Get GitHub token from environment variable."""
-    token = os.environ.get('GITHUB_TOKEN')
+    token = os.environ.get("GITHUB_TOKEN")
     if not token:
-        raise ValueError("Please set your GITHUB_TOKEN as an environment variable, i.e. export GITHUB_TOKEN=xxx")
+        raise ValueError(
+            "Please set your GITHUB_TOKEN as an environment variable, i.e. export GITHUB_TOKEN=xxx"
+        )
     return token
+
 
 def get_repo_info() -> tuple[str, str]:
     """Get repository information from environment variable or user input."""
-    repo_info = os.environ.get('EZGITUP_DEPO')
+    repo_info = os.environ.get("EZGITUP_DEPO")
     if repo_info:
-        try:
-            owner, repo = repo_info.split('/')
-            return owner.strip(), repo.strip()
-        except ValueError:
-            print("Warning: EZGITUP_DEPO format should be 'owner/repo'")
-    
+        repo_info = repo_info.strip()
+
+        # Handle GitHub URLs
+        if repo_info.startswith("git@github.com:"):
+            # Remove 'git@github.com:' and '.git' if present
+            repo_info = repo_info.replace("git@github.com:", "").replace(".git", "")
+        elif repo_info.startswith("https://github.com/"):
+            # Remove 'https://github.com/' and '.git' if present
+            repo_info = repo_info.replace("https://github.com/", "").replace(".git", "")
+
+        # Try to parse owner/repo from various formats
+        parts = repo_info.split("/")
+        if len(parts) == 2:
+            return parts[0].strip(), parts[1].strip()
+        elif len(parts) == 1:
+            # If only one part is provided, assume it's the repo name
+            # and use the current user as the owner
+            return os.environ.get("USER", ""), parts[0].strip()
+        else:
+            # If more than 2 parts, take the last part as repo
+            # and everything before the last slash as owner
+            owner = "/".join(parts[:-1]).strip()
+            repo = parts[-1].strip()
+            return owner, repo
+
     owner = input("Enter the GitHub repository owner (username or organization name): ")
     repo = input("Enter the repository name: ")
     return owner, repo
 
+
 def upload_file(owner: str, repo: str, file_path: str, token: str) -> bool:
     """Upload a single file to GitHub repository."""
     try:
-        with open(file_path, 'rb') as file:
-            content = base64.b64encode(file.read()).decode('utf-8')
+        with open(file_path, "rb") as file:
+            content = base64.b64encode(file.read()).decode("utf-8")
 
         url = f"https://api.github.com/repos/{owner}/{repo}/contents/{os.path.basename(file_path)}"
         headers = {
             "Authorization": f"token {token}",
-            "Accept": "application/vnd.github.v3+json"
+            "Accept": "application/vnd.github.v3+json",
         }
         data = {
             "message": f"Adding file: {os.path.basename(file_path)}",
-            "content": content
+            "content": content,
         }
 
         response = requests.put(url, headers=headers, json=data)
 
         if response.status_code == 201:
-            print(f"Successfully added {os.path.basename(file_path)} to the repository!")
+            print(
+                f"Successfully added {os.path.basename(file_path)} to the repository!"
+            )
             return True
         else:
             print(f"Error uploading {file_path}: {response.json().get('message')}")
@@ -54,28 +81,50 @@ def upload_file(owner: str, repo: str, file_path: str, token: str) -> bool:
         print(f"Error processing {file_path}: {str(e)}")
         return False
 
+
+def expand_file_patterns(patterns: List[str]) -> List[str]:
+    """Expand wildcard patterns into list of matching files."""
+    expanded_files = []
+    for pattern in patterns:
+        # Expand the pattern
+        matches = glob.glob(pattern)
+        if not matches:
+            print(f"Warning: No files found matching pattern: {pattern}")
+        expanded_files.extend(matches)
+    return expanded_files
+
+
 def main():
-    parser = argparse.ArgumentParser(description='Upload files to GitHub repository')
-    parser.add_argument('files', nargs='*', help='Files to upload')
+    parser = argparse.ArgumentParser(description="Upload files to GitHub repository")
+    parser.add_argument(
+        "files", nargs="*", help="Files to upload (supports wildcards like *.json)"
+    )
     args = parser.parse_args()
 
     # Get GitHub token
     token = get_github_token()
-    
+
     # Get repository information
     owner, repo = get_repo_info()
-    
+
     # Get files to upload
     files_to_upload: List[str] = args.files
     if not files_to_upload:
         while True:
-            file_path = input("Enter the path to the file you want to upload (or press Enter to finish): ").strip()
+            file_path = input(
+                "Enter the path to the file you want to upload (or press Enter to finish): "
+            ).strip()
             if not file_path:
                 break
-            if os.path.exists(file_path):
-                files_to_upload.append(file_path)
+            # Expand any wildcards in the input
+            matches = glob.glob(file_path)
+            if matches:
+                files_to_upload.extend(matches)
             else:
-                print(f"File not found: {file_path}")
+                print(f"Warning: No files found matching pattern: {file_path}")
+
+    # Expand any wildcards in the command line arguments
+    files_to_upload = expand_file_patterns(files_to_upload)
 
     if not files_to_upload:
         print("No files specified for upload.")
@@ -87,4 +136,6 @@ def main():
         if upload_file(owner, repo, file_path, token):
             success_count += 1
 
-    print(f"\nUpload complete: {success_count}/{len(files_to_upload)} files uploaded successfully.") 
+    print(
+        f"\nUpload complete: {success_count}/{len(files_to_upload)} files uploaded successfully."
+    )
