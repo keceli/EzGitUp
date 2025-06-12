@@ -99,13 +99,24 @@ def main():
     parser.add_argument(
         "files", nargs="*", help="Files to upload (supports wildcards like *.json)"
     )
+    parser.add_argument(
+        "--owner", "-o", help="GitHub repository owner (username or organization)"
+    )
+    parser.add_argument("--repo", "-r", help="GitHub repository name")
     args = parser.parse_args()
 
     # Get GitHub token
     token = get_github_token()
 
     # Get repository information
-    owner, repo = get_repo_info()
+    owner = args.owner
+    repo = args.repo
+
+    # If owner or repo not provided via CLI, try environment variable or prompt
+    if not (owner and repo):
+        env_owner, env_repo = get_repo_info()
+        owner = owner or env_owner
+        repo = repo or env_repo
 
     # Get files to upload
     files_to_upload: List[str] = args.files
