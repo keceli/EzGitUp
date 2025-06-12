@@ -5,7 +5,7 @@ import requests
 import argparse
 import glob
 import uuid
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 
 def get_github_token() -> str:
@@ -18,7 +18,7 @@ def get_github_token() -> str:
     return token
 
 
-def get_repo_info() -> tuple[str, str]:
+def get_repo_info() -> Tuple[str, str]:
     """Get repository information from environment variable or user input."""
     repo_info = os.environ.get("EZGITUP_DEPO")
     if repo_info:
