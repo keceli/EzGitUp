@@ -47,8 +47,12 @@ ezgitup -r username/repository *.json
 ezgitup --dir docs *.md          # Upload all markdown files to docs/
 ezgitup -d src/data *.json       # Upload JSON files to src/data/
 
+# Add UUID to filenames to ensure uniqueness
+ezgitup --uuid *.json            # Files will be renamed like: data_a1b2c3d4.json
+ezgitup -u *.json                # Same as above, using short option
+
 # Combine options
-ezgitup -r username/repository -d docs *.md
+ezgitup -r username/repository -d docs -u *.md
 ```
 
 The tool will use the following priority for repository information:
@@ -76,6 +80,7 @@ ezgitup
   - GitHub SSH URLs
   - GitHub HTTPS URLs
 - Target directory support (`--dir`/`-d`)
+- UUID support for unique filenames (`--uuid`/`-u`)
 - Environment variable configuration
 - Interactive mode for user input
 - Progress tracking for multiple file uploads

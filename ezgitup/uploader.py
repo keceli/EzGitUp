@@ -4,6 +4,7 @@ import base64
 import requests
 import argparse
 import glob
+import uuid
 from typing import List, Optional
 
 
@@ -51,16 +52,35 @@ def get_repo_info() -> tuple[str, str]:
     return owner, repo
 
 
+def get_unique_filename(file_path: str, use_uuid: bool = False) -> str:
+    """Get a unique filename, optionally adding UUID."""
+    filename = os.path.basename(file_path)
+    if not use_uuid:
+        return filename
+
+    # Split filename into name and extension
+    name, ext = os.path.splitext(filename)
+    # Add UUID and return
+    return f"{name}_{uuid.uuid4().hex[:8]}{ext}"
+
+
 def upload_file(
-    owner: str, repo: str, file_path: str, token: str, target_dir: str = ""
+    owner: str,
+    repo: str,
+    file_path: str,
+    token: str,
+    target_dir: str = "",
+    use_uuid: bool = False,
 ) -> bool:
     """Upload a single file to GitHub repository."""
     try:
         with open(file_path, "rb") as file:
             content = base64.b64encode(file.read()).decode("utf-8")
 
+        # Get unique filename if requested
+        filename = get_unique_filename(file_path, use_uuid)
+
         # Construct the path in the repository
-        filename = os.path.basename(file_path)
         repo_path = os.path.join(target_dir, filename).replace("\\", "/").lstrip("/")
 
         url = f"https://api.github.com/repos/{owner}/{repo}/contents/{repo_path}"
@@ -108,6 +128,12 @@ def main():
         "-d",
         default="",
         help='Target directory in the repository (e.g., "docs" or "src/data")',
+    )
+    parser.add_argument(
+        "--uuid",
+        "-u",
+        action="store_true",
+        help="Add UUID to filenames to ensure uniqueness",
     )
     args = parser.parse_args()
 
@@ -177,7 +203,7 @@ def main():
     # Upload files
     success_count = 0
     for file_path in files_to_upload:
-        if upload_file(owner, repo, file_path, token, args.dir):
+        if upload_file(owner, repo, file_path, token, args.dir, args.uuid):
             success_count += 1
 
     print(
