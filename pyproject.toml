@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ezgitup"
-version = "0.2.1"
+version = "0.2.2"
 description = "A simple tool to upload files to GitHub repositories"
 readme = "README.md"
 requires-python = ">=3.6"
@@ -22,8 +22,8 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/ezgitup"
-"Bug Tracker" = "https://github.com/yourusername/ezgitup/issues"
+"Homepage" = "https://github.com/keceli/EzGitUp"
+"Bug Tracker" = "https://github.com/keceli/EzGitUp/issues"
 
 [project.scripts]
 ezgitup = "ezgitup.uploader:main" 
