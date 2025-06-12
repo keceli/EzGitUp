@@ -8,51 +8,56 @@ A simple command-line tool to upload files to GitHub repositories.
 pip install ezgitup
 ```
 
-## Usage
+## Features
+
+- Upload single or multiple files to GitHub
+- Support for wildcards in file patterns
+- Environment variable configuration
+- Interactive prompts for missing information
+- Support for both HTTPS and SSH repository URLs
+- Directory support for organizing uploads
+- UUID support for unique filenames
+- Version checking
+
+## Configuration
 
 ### Environment Variables
 
-You can set the following environment variables:
-- `GITHUB_TOKEN`: Your GitHub personal access token (required)
-- `EZGITUP_DEPO`: Repository in format "owner/repo" or GitHub URL (optional)
+- `EZGITUP_TOKEN`: Your GitHub personal access token
+- `EZGITUP_DEPO`: Default repository (format: owner/repo or full URL)
 
-The `EZGITUP_DEPO` environment variable supports multiple formats:
-- Simple format: `owner/repo`
-- SSH URL: `git@github.com:owner/repo.git`
-- HTTPS URL: `https://github.com/owner/repo.git`
-
-### Command Line Usage
-
-Upload single or multiple files:
+## Command-line Usage
 
 ```bash
-# Upload single file
-ezgitup path/to/file.txt
+# Basic usage
+ezgitup file.txt
 
 # Upload multiple files
-ezgitup path/to/file1.txt path/to/file2.txt
+ezgitup file1.txt file2.txt
 
-# Upload files using wildcards
-ezgitup *.json                    # All JSON files in current directory
-ezgitup path/to/dir/*            # All files in a directory
-ezgitup *.py *.json *.md         # Multiple file types
-ezgitup test_*.py                # Files matching a pattern
+# Use wildcards
+ezgitup *.txt
 
 # Specify repository
-ezgitup --repo username/repository *.json
-# or using short option
-ezgitup -r username/repository *.json
+ezgitup -r owner/repo file.txt
+# or
+ezgitup --repo owner/repo file.txt
 
-# Upload files to a specific directory in the repository
-ezgitup --dir docs *.md          # Upload all markdown files to docs/
-ezgitup -d src/data *.json       # Upload JSON files to src/data/
+# Specify target directory
+ezgitup -d docs file.txt
+# or
+ezgitup --dir docs file.txt
 
-# Add UUID to filenames to ensure uniqueness
-ezgitup --uuid *.json            # Files will be renamed like: data_a1b2c3d4.json
-ezgitup -u *.json                # Same as above, using short option
+# Add UUID to filenames
+ezgitup -u file.txt
+# or
+ezgitup --uuid file.txt
 
-# Combine options
-ezgitup -r username/repository -d docs -u *.md
+# Check version
+ezgitup --version
+
+# Combined options
+ezgitup -r owner/repo -d docs -u *.txt
 ```
 
 The tool will use the following priority for repository information:

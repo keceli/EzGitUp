@@ -5,7 +5,14 @@ import requests
 import argparse
 import glob
 import uuid
+import sys
+import json
 from typing import List, Optional, Tuple
+from pathlib import Path
+from importlib.metadata import version
+from github import Github
+from github.ContentFile import ContentFile
+from github.GithubException import GithubException
 
 
 def get_github_token() -> str:
@@ -121,21 +128,29 @@ def main():
         "files", nargs="*", help="Files to upload (supports wildcards like *.json)"
     )
     parser.add_argument(
-        "--repo", "-r", help='GitHub repository in format "owner/repo" or GitHub URL'
+        "-r", "--repo", help='GitHub repository in format "owner/repo" or GitHub URL'
     )
     parser.add_argument(
-        "--dir",
         "-d",
-        default="",
+        "--dir",
         help='Target directory in the repository (e.g., "docs" or "src/data")',
     )
     parser.add_argument(
-        "--uuid",
         "-u",
+        "--uuid",
         action="store_true",
         help="Add UUID to filenames to ensure uniqueness",
     )
+    parser.add_argument("--version", action="store_true", help="Show version and exit")
     args = parser.parse_args()
+
+    if args.version:
+        print(f"ezgitup version {version('ezgitup')}")
+        sys.exit(0)
+
+    if not args.files:
+        parser.print_help()
+        sys.exit(1)
 
     # Get GitHub token
     token = get_github_token()
