@@ -10,20 +10,25 @@ pip install ezgitup
 
 ## Features
 
-- Upload single or multiple files to GitHub
-- Support for wildcards in file patterns
+- Upload single or multiple files to GitHub repositories
+- Support for wildcard patterns (e.g., `*.json`, `test_*.py`)
+- Flexible repository specification:
+  - Command-line option (`--repo`/`-r`)
+  - Simple owner/repo format
+  - GitHub SSH URLs
+  - GitHub HTTPS URLs
+- Target directory support (`--dir`/`-d`)
+- UUID support for unique filenames (`--uuid`/`-u`)
 - Environment variable configuration
-- Interactive prompts for missing information
-- Support for both HTTPS and SSH repository URLs
-- Directory support for organizing uploads
-- UUID support for unique filenames
+- Interactive mode for user input
+- Progress tracking for multiple file uploads
 - Version checking
 
 ## Configuration
 
 ### Environment Variables
 
-- `EZGITUP_TOKEN`: Your GitHub personal access token
+- `GITHUB_TOKEN`: Your GitHub personal access token
 - `EZGITUP_DEPO`: Default repository (format: owner/repo or full URL)
 
 ## Command-line Usage
@@ -75,28 +80,11 @@ If you don't specify any files or the `EZGITUP_DEPO` environment variable, the t
 ezgitup
 ```
 
-## Features
-
-- Upload single or multiple files to GitHub repositories
-- Support for wildcard patterns (e.g., `*.json`, `test_*.py`)
-- Flexible repository specification:
-  - Command-line option (`--repo`/`-r`)
-  - Simple owner/repo format
-  - GitHub SSH URLs
-  - GitHub HTTPS URLs
-- Target directory support (`--dir`/`-d`)
-- UUID support for unique filenames (`--uuid`/`-u`)
-- Environment variable configuration
-- Interactive mode for user input
-- Progress tracking for multiple file uploads
-
 ## Requirements
 
 - Python 3.6 or higher
-- requests library
+- `requests` library
 
 ## License
 
 Apache-2.0 License
-
-   

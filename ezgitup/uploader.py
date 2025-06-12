@@ -9,10 +9,7 @@ import sys
 import json
 from typing import List, Optional, Tuple
 from pathlib import Path
-from importlib.metadata import version
-from github import Github
-from github.ContentFile import ContentFile
-from github.GithubException import GithubException
+from . import __version__
 
 
 def get_github_token() -> str:
@@ -145,7 +142,7 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        print(f"ezgitup version {version('ezgitup')}")
+        print(f"ezgitup version {__version__}")
         sys.exit(0)
 
     if not args.files:
